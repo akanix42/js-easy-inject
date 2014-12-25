@@ -5,13 +5,14 @@ define(function (require) {
 
     function Injector() {
         var self = this;
-        this.fixDependencyCasing = firstLetterUpperCase;
+        this.fixDependencyCasing = allUpperCase;
 
         function resolve(name, dependencyAbove, dependencyTree) {
+            var originalName = name;
             name = self.fixDependencyCasing(name);
             if (!(name in self.dependencies)) {
                 debugger;
-                throw name + ' not registered';
+                throw originalName + ' not registered';
             }
             if (truthy(dependencyAbove) && name in dependencyTree)
                 throw dependencyAbove + ' has a circular dependency on ' + name;
@@ -34,7 +35,7 @@ define(function (require) {
             },
 
             register: function (name, item, isSingleton) {
-                self.dependencies[name] = {item: item, initializer: new Initializer(self, name, item, isSingleton)};
+                self.dependencies[self.fixDependencyCasing(name)] = {item: item, initializer: new Initializer(self, name, item, isSingleton)};
             },
 
             resolve: function (name) {
